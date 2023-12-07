@@ -6,14 +6,12 @@ import (
 	"time"
 )
 
-// distribuição triangular
 type Triangular struct {
 	Min  float64
 	Mode float64
 	Max  float64
 }
 
-// gera um valor aleatório de acordo com a distribuição triangular
 func (t *Triangular) Rand() float64 {
 	r := rand.Float64()
 	if r <= (t.Mode-t.Min)/(t.Max-t.Min) {
@@ -22,7 +20,6 @@ func (t *Triangular) Rand() float64 {
 	return t.Max - (t.Max-t.Min)*(1-r)
 }
 
-// define o sistema de controle fuzzy
 type SistemaFuzzy struct {
 	Angle                float64
 	AngularVelocity      float64
@@ -38,7 +35,6 @@ type SistemaFuzzy struct {
 	OutputPositive       *Triangular
 }
 
-// inicializa o sistema de controle fuzzy
 func InicializarSistemaFuzzy() *SistemaFuzzy {
 	angleLeft := Triangular{Min: -90, Mode: -90, Max: 0}
 	angleVertical := Triangular{Min: -45, Mode: 0, Max: 45}
@@ -65,7 +61,6 @@ func InicializarSistemaFuzzy() *SistemaFuzzy {
 	}
 }
 
-// avalia o sistema fuzzy com regras e parametros dados
 func AvaliarSistemaFuzzy(sistema *SistemaFuzzy, regras []int) float64 {
 	antecedentIndex := regras[0]
 	consequentIndex := regras[1]
@@ -101,7 +96,6 @@ func AvaliarSistemaFuzzy(sistema *SistemaFuzzy, regras []int) float64 {
 	return sistema.Output
 }
 
-// avalia a qualidade de um individuo
 func FuncaoFitness(regras []int) float64 {
 	sistema := InicializarSistemaFuzzy()
 	sistema.Angle = -30
@@ -110,11 +104,9 @@ func FuncaoFitness(regras []int) float64 {
 	return AvaliarSistemaFuzzy(sistema, regras)
 }
 
-// otimiza o sistema fuzzy utilizando algoritmo genetico
 func Genetico(populationSize, numGenerations int) []int {
 	rand.Seed(time.Now().UnixNano())
 
-	// população inicial
 	population := make([][]int, populationSize)
 	for i := range population {
 		population[i] = make([]int, 3)
@@ -123,37 +115,28 @@ func Genetico(populationSize, numGenerations int) []int {
 		}
 	}
 
-	// avaliação da população inicial
 	scores := make([]float64, populationSize)
 	for i, individual := range population {
 		scores[i] = FuncaoFitness(individual)
 	}
 
-	// algoritmo genetico
 	var bestIndividual []int
 	bestScore := -1.0
 
 	for gen := 0; gen < numGenerations; gen++ {
-		// calculo de crossover
 		for i := 0; i < populationSize; i += 2 {
 			crossoverPoint := rand.Intn(3)
 			for j := 0; j < crossoverPoint; j++ {
 				population[i][j], population[i+1][j] = population[i+1][j], population[i][j]
 			}
 		}
-
-		// calculo de mutação
 		for i := 0; i < populationSize; i++ {
 			mutationPoint := rand.Intn(3)
 			population[i][mutationPoint] = rand.Intn(3)
 		}
-
-		// avaliação da população após crossover e mutação
 		for i, individual := range population {
 			scores[i] = FuncaoFitness(individual)
 		}
-
-		// seleção do melhor individuo
 		for i, score := range scores {
 			if score > bestScore {
 				bestIndividual = make([]int, 3)
