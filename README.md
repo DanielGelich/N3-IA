@@ -1,5 +1,7 @@
 # N3-IA
 
+Alunos: Carlos Nass, Daniel Gelich e Diogo Ramusk
+
 instruções para python !
 
 pip install numpy scikit-fuzzy matplotlib
